@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | AgriMonitor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="profile-page">
+        <header class="profile-page-header">
+            <div>
+                <h1>My Profile</h1>
+                <p>Manage your account information.</p>
+            </div>
+            <a href="index.html" class="profile-back-link">← Dashboard</a>
+        </header>
+
+        <section class="profile-card">
+            <h2>Profile Information</h2>
+
+            <div class="profile-photo-section">
+                <div class="profile-photo" id="profilePhotoPreview">J</div>
+
+                <div>
+                    <h3>Profile Picture</h3>
+                    <p>Upload a photo for your account.</p>
+                    <label for="profilePhotoInput" class="profile-upload-button">
+                        Upload Photo
+                    </label>
+                    <input
+                        type="file"
+                        id="profilePhotoInput"
+                        accept="image/png, image/jpeg, image/webp"
+                        hidden
+                    >
+                </div>
+            </div>
+
+            <div class="profile-form-group">
+                <label for="profileUsername">Username</label>
+                <input
+                    type="text"
+                    id="profileUsername"
+                    placeholder="Enter your username"
+                    maxlength="50"
+                >
+            </div>
+
+            <div class="profile-form-group">
+                <label for="profileEmail">Email Address</label>
+                <input type="email" id="profileEmail" readonly>
+            </div>
+
+            <div class="profile-form-group">
+                <label for="profileRole">Account Role</label>
+                <input type="text" id="profileRole" value="User" readonly>
+            </div>
+
+            <div class="profile-form-actions">
+                <button type="button" id="saveProfileButton">
+                    Save Changes
+                </button>
+                <p id="profileMessage" role="status"></p>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AgriMonitor</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #EDF6F9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            display: flex;
+            width: 850px;
+            max-width: 100%;
+            min-height: 500px;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(20, 55, 40, 0.12);
+        }
+
+        .login-info {
+            flex: 1;
+            background: linear-gradient(
+    135deg,
+    #007872 0%,
+    #419E98 60%,
+    #82C4BE 100%
+);
+            color: white;
+            padding: 45px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-icon {
+            font-size: 45px;
+            margin-bottom: 25px;
+        }
+
+        .login-info h1 {
+            font-size: 28px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .login-info p {
+            color: #05130c;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .login-form {
+            flex: 1;
+            padding: 45px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form h2 {
+            color: #20372e;
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #090b0a;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #34483d;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d7e1da;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #26815d;
+            box-shadow: 0 0 0 3px rgba(38, 129, 93, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #419E98, #007872);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #006b66;
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .demo-note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #7b8980;
+            line-height: 1.6;
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 13px;
+            color: #237652;
+            text-decoration: none;
+            margin-top: -8px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 650px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-info {
+                padding: 30px;
+            }
+
+            .login-info h1 {
+                font-size: 23px;
+            }
+
+            .brand-icon {
+                margin-bottom: 12px;
+            }
+
+            .login-form {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <section class="login-info">
+            <div class="brand-icon">🌱</div>
+            <h1>AgriMonitor</h1>
+            <p>
+                Monitor irrigation water levels and flow conditions
+                for small-scale farms through one dashboard.
+            </p>
+        </section>
+
+        <section class="login-form">
+            <h2>Welcome Back!</h2>
+            <p class="subtitle">Sign in to access your dashboard.</p>
+
+            <form id="loginForm">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <a href="#" class="forgot-link" id="forgotPassword">
+                    Forgot password?
+                </a>
+
+                <button type="submit" id="loginButton">Sign In</button>
+                <p id="message" role="status" aria-live="polite"></p>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; color: #78877f; font-size: 14px;">
+                Don't have an account?
+                <a href="register.html" style="color: #237652; font-weight: bold; text-decoration: none;">
+                    Register here
+                </a>
+            </p>
+
+            <p class="demo-note">
+                Sign in using an account registered with AgriMonitor.
+            </p>
+        </section>
+    </div>
+
+    <script type="module">
+        import { auth } from "./firebase.js";
+        import {
+            signInWithEmailAndPassword,
+            sendPasswordResetEmail
+        } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+
+        const loginForm = document.getElementById("loginForm");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const loginButton = document.getElementById("loginButton");
+        const message = document.getElementById("message");
+        const forgotPassword = document.getElementById("forgotPassword");
+
+        function showMessage(text, isError = true) {
+            message.textContent = text;
+            message.style.color = isError ? "#b42318" : "#237652";
+        }
+
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Signing in...";
+            showMessage("");
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+
+                showMessage("Login successful! Opening dashboard...", false);
+
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Login error:", error.code);
+
+                if (
+                    error.code === "auth/invalid-credential" ||
+                    error.code === "auth/wrong-password" ||
+                    error.code === "auth/user-not-found"
+                ) {
+                    showMessage("Incorrect email or password.");
+                } else if (error.code === "auth/invalid-email") {
+                    showMessage("Please enter a valid email address.");
+                } else if (error.code === "auth/too-many-requests") {
+                    showMessage("Too many attempts. Please try again later.");
+                } else {
+                    showMessage("Unable to sign in. Check your connection and try again.");
+                }
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Sign In";
+            }
+        });
+
+        forgotPassword.addEventListener("click", async (event) => {
+            event.preventDefault();
+
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showMessage("Enter your email address first.");
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showMessage("If the account is registered, a password reset email will be sent.", false);
+            } catch (error) {
+                console.error("Password reset error:", error.code);
+                showMessage("Unable to send the reset email. Check the email and try again.");
+            }
+        });
+    </script>
+</body>
+</html>

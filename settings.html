@@ -1,0 +1,499 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | AgriMonitor</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --alice-blue: #EDF6F9;
+    --light-blue: #B8DDDC;
+    --tiffany-blue: #82C4BE;
+    --persian-green: #419E98;
+    --skobeloff: #007872;
+    --text: #263b3a;
+    --muted: #607d7b;
+    --border: #d5e8e5;
+}
+
+
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+    background:
+        radial-gradient(ellipse at top left, #d9eeeb 0%, transparent 42%),
+        radial-gradient(ellipse at bottom right, #e1eff5 0%, transparent 38%),
+        linear-gradient(135deg, #EDF6F9 0%, #f8fbfa 52%, #e5f3f0 100%);
+    background-attachment: fixed;
+}
+
+.main-content {
+    width: 100%;
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 38px 26px 55px;
+}
+
+/* Page heading */
+.topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.header-container {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: 100%;
+    padding: 34px;
+    background: linear-gradient(
+        120deg,
+        #EDF6F9 0%,
+        #B8DDDC 48%,
+        #82C4BE 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    box-shadow: 0 12px 35px rgba(0, 120, 114, 0.12);
+}
+
+.header-container::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 200px;
+    height: 200px;
+    top: -85px;
+    right: -45px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+}
+
+.topbar h1 {
+    margin: 0 0 7px;
+    color: #006b66;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 750;
+    letter-spacing: -1px;
+}
+
+.topbar p {
+    margin: 0;
+    color: #365f5d;
+    font-size: 15px;
+}
+
+/* Separate dashboard link container */
+.back-container {
+    padding: 11px 17px;
+    background: linear-gradient(135deg, #ffffff, #EDF6F9);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 120, 114, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.back-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(0, 120, 114, 0.12);
+}
+
+.back-container a {
+    color: var(--skobeloff);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.back-container a:hover {
+    color: #005a55;
+    text-decoration: underline;
+}
+
+/* Settings layout */
+.settings-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Gradient settings cards */
+.settings-card {
+    position: relative;
+    overflow: hidden;
+    padding: 28px 30px;
+    margin-bottom: 22px;
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #EDF6F9 48%,
+        #e1f2ef 100%
+    );
+    border: 1px solid rgba(130, 196, 190, 0.42);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 120, 114, 0.07);
+    transition: transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+}
+
+.settings-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #B8DDDC,
+        #82C4BE,
+        #419E98,
+        #007872
+    );
+}
+
+.settings-card:hover {
+    transform: translateY(-3px);
+    border-color: #9bcfc9;
+    box-shadow: 0 14px 30px rgba(0, 120, 114, 0.13);
+}
+
+.settings-card h2 {
+    margin: 0 0 8px;
+    color: #007872;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.settings-card p {
+    margin-top: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Form fields */
+.settings-field {
+    margin-top: 22px;
+}
+
+.settings-field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #344f4d;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.settings-field input:not([type="checkbox"]),
+.settings-field select {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    min-height: 48px;
+    padding: 12px 14px;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #c7e1df;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s,
+                box-shadow 0.2s,
+                background 0.2s;
+}
+
+.settings-field input:hover,
+.settings-field select:hover {
+    border-color: var(--tiffany-blue);
+}
+
+.settings-field input:focus,
+.settings-field select:focus {
+    background: #ffffff;
+    border-color: var(--persian-green);
+    box-shadow: 0 0 0 4px rgba(65, 158, 152, 0.14);
+}
+
+.settings-field input[readonly] {
+    color: #607d7b;
+    background: #eaf3f2;
+}
+
+.settings-field label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    cursor: pointer;
+}
+
+.settings-field input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--persian-green);
+    cursor: pointer;
+}
+
+/* Gradient buttons */
+.settings-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    margin-top: 17px;
+    padding: 12px 22px;
+    color: #ffffff;
+    background: linear-gradient(
+        135deg,
+        #419E98,
+        #007872
+    );
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 12px rgba(0, 120, 114, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.settings-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #368b85, #00635e);
+    box-shadow: 0 8px 18px rgba(0, 120, 114, 0.25);
+}
+
+.settings-button:active {
+    transform: translateY(0);
+}
+
+.settings-button:focus-visible {
+    outline: 3px solid #B8DDDC;
+    outline-offset: 3px;
+}
+
+#saveSettingsButton {
+    min-width: 165px;
+    min-height: 48px;
+    margin-top: 0;
+}
+
+.settings-message {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Responsive layout */
+@media (max-width: 700px) {
+    .main-content {
+        padding: 22px 14px 35px;
+    }
+
+    .header-container {
+        padding: 25px 21px;
+        border-radius: 19px;
+    }
+
+    .topbar {
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .topbar p {
+        font-size: 14px;
+    }
+
+    .settings-card {
+        padding: 23px 19px;
+        margin-bottom: 16px;
+        border-radius: 17px;
+    }
+
+    .settings-card h2 {
+        font-size: 18px;
+    }
+
+    .settings-field input:not([type="checkbox"]),
+    .settings-field select {
+        max-width: 100%;
+    }
+
+    .settings-button,
+    #saveSettingsButton {
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+
+        <header class="topbar">
+    <div class="header-container">
+        <h1>Settings</h1>
+        <p>Manage your AgriMonitor preferences.</p>
+    </div>
+
+    <div class="back-container">
+        <a href="index.html">← Back to Dashboard</a>
+    </div>
+</header>
+        <main class="settings-container">
+
+            <section class="settings-card">
+                <h2>👤 Account</h2>
+                <p>View your account information and manage your password.</p>
+
+                <div class="settings-field">
+                    <label for="accountEmail">Email Address</label>
+                    <input type="email" id="accountEmail" readonly>
+                </div>
+
+                
+<div class="settings-field">
+    <label for="oldPassword">Old Password</label>
+    <input
+        type="password"
+        id="oldPassword"
+        placeholder="Enter your current password"
+        autocomplete="current-password"
+    >
+</div>
+
+<div class="settings-field">
+    <label for="newPassword">New Password</label>
+    <input
+        type="password"
+        id="newPassword"
+        placeholder="Enter at least 6 characters"
+        minlength="6"
+        autocomplete="new-password"
+    >
+</div>
+
+<div class="settings-field">
+    <label for="confirmNewPassword">Confirm New Password</label>
+    <input
+        type="password"
+        id="confirmNewPassword"
+        placeholder="Re-enter your new password"
+        minlength="6"
+        autocomplete="new-password"
+    >
+</div>
+
+<button class="settings-button" id="changePasswordButton">
+    Change Password
+</button>
+
+<p id="accountMessage" class="settings-message" aria-live="polite"></p>
+
+
+            <section class="settings-card">
+                <h2>💧 Alerts</h2>
+                <p>Choose the minimum water level and alert preference.</p>
+
+                <div class="settings-field">
+                    <label for="waterThreshold">Minimum Water Level (%)</label>
+                    <input
+                        type="number"
+                        id="waterThreshold"
+                        min="0"
+                        max="100"
+                        value="30"
+                    >
+                </div>
+
+                <div class="settings-field">
+                    <label>
+                        <input type="checkbox" id="alertsEnabled" checked>
+                        Enable low-water alerts
+                    </label>
+                </div>
+            </section>
+
+            <section class="settings-card">
+                <h2>📡 Monitoring</h2>
+                <p>Choose the preferred dashboard refresh interval.</p>
+
+                <div class="settings-field">
+                    <label for="refreshInterval">Refresh Interval</label>
+                    <select id="refreshInterval">
+                        <option value="5">Every 5 seconds</option>
+                        <option value="10">Every 10 seconds</option>
+                        <option value="30">Every 30 seconds</option>
+                        <option value="60">Every 60 seconds</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="settings-card">
+                <h2>ℹ️ About AgriMonitor</h2>
+                <p><strong>Project:</strong> IoT-Based Irrigation Water Level and Flow Monitoring System</p>
+                <p><strong>Version:</strong> 1.0.0</p>
+                <p>Designed to help small-scale farms monitor irrigation water conditions.</p>
+            </section>
+
+            <button class="settings-button" id="saveSettingsButton">
+                Save Settings
+            </button>
+            <p id="saveMessage" class="settings-message" aria-live="polite"></p>
+
+        </main>
+    </div>
+
+    <script type="module" src="settings.js"></script>
+
+    
+<!-- Center Notification -->
+<div id="notificationOverlay" class="notification-overlay">
+    <div class="notification-box">
+        <div id="notificationIcon" class="notification-icon">✓</div>
+
+        <h2 id="notificationTitle">Success!</h2>
+
+        <p id="notificationText">
+            Settings saved successfully!
+        </p>
+
+        <button id="notificationButton" type="button">
+            Continue
+        </button>
+    </div>
+</div>
+
+</body>
+</html>
