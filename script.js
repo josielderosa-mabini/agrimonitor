@@ -208,16 +208,69 @@ historyData.flows.forEach((value, index) => {
 
     ctx.stroke();
 
-    // Show time labels
+    
+    // Responsive time labels
     ctx.fillStyle = "#64748b";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
+    ctx.font = "10px Arial";
 
-    historyData.labels.forEach((label, index) => {
-        if (count <= 5 || index % 2 === 0 || index === count - 1) {
-            ctx.fillText(label, xPosition(index), top + chartHeight + 10);
+    const isMobileChart = width <= 500;
+
+    // Desktop: original labels
+    // Mobile: show fewer labels to prevent overlap
+    const labelIndexes = [];
+
+    if (isMobileChart) {
+        if (count === 1) {
+            labelIndexes.push(0);
+        } else if (count === 2) {
+            labelIndexes.push(0, 1);
+        } else {
+            labelIndexes.push(
+                0,
+                Math.floor((count - 1) / 2),
+                count - 1
+            );
         }
+    } else {
+        historyData.labels.forEach((label, index) => {
+            if (
+                count <= 5 ||
+                index % 2 === 0 ||
+                index === count - 1
+            ) {
+                labelIndexes.push(index);
+            }
+        });
+    }
+
+    labelIndexes.forEach((index) => {
+        const label = historyData.labels[index];
+
+        // Shorter time format on mobile
+        const displayLabel = isMobileChart
+            ? label.replace(/:\d{2}(?=\s*(AM|PM)?$)/i, "")
+            : label;
+
+        let x = xPosition(index);
+
+        // Prevent labels from extending beyond chart edges
+        if (isMobileChart) {
+            const labelWidth = ctx.measureText(displayLabel).width;
+            x = Math.max(
+                labelWidth / 2 + 4,
+                Math.min(width - labelWidth / 2 - 4, x)
+            );
+        }
+
+        ctx.fillText(
+            displayLabel,
+            x,
+            top + chartHeight + 10
+        );
     });
+
 }
 
 
@@ -384,7 +437,6 @@ async function refreshDashboard() {
 
 
 refreshDashboard();
-
 
 
 const menuToggle = document.getElementById("menuToggle");
