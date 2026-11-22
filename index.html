@@ -265,57 +265,100 @@
                 </div>
                         </section>
 
-            <section class="panel" id="system">
-                <div class="panel-heading">
-                    <div>
-<h2>System Information</h2>
-<p>
-    AgriMonitor is an IoT-based irrigation monitoring system designed
-    to monitor water levels and water flow conditions. It helps users
-    track water supply and identify potential irrigation problems
-    through a centralized web dashboard.
-</p>
-</div>
-</div>
+    
+<section class="panel" id="system">
 
-<div class="info-grid">
-    <div class="info-item">
-        <span class="info-label">SYSTEM NAME</span>
-        <strong>AgriMonitor</strong>
-        <p>Web-based irrigation monitoring dashboard.</p>
+    <div class="panel-heading">
+        <div>
+            <h2>System Information</h2>
+            <p>
+                AgriMonitor is an IoT-based irrigation water level
+                and flow monitoring system developed for small-scale
+                farms. It uses sensor technology and an ESP32
+                microcontroller to monitor irrigation water
+                conditions and is designed to provide real-time
+                information and alerts through a web-based dashboard.
+            </p>
+        </div>
     </div>
 
-    <div class="info-item">
-        <span class="info-label">MONITORING MODE</span>
-        <strong>Sample Data</strong>
-        <p>Displays sample readings while hardware integration is pending.</p>
+    <div class="info-grid">
+
+        <div class="info-item">
+            <span class="info-label">SYSTEM NAME</span>
+            <strong>AgriMonitor</strong>
+            <p>
+                IoT-based irrigation water level and flow
+                monitoring system.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">MICROCONTROLLER</span>
+            <strong>ESP32</strong>
+            <p>
+                Processes sensor readings and supports
+                Wi-Fi communication.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">WATER LEVEL SENSOR</span>
+            <strong>Analog Water Level Sensor</strong>
+            <p>
+                Detects changes in water level within
+                the monitored water container.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">WATER FLOW SENSOR</span>
+            <strong>YF-S201</strong>
+            <p>
+                Measures the rate of water flowing
+                through the irrigation pipeline.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">CONNECTIVITY</span>
+            <strong>Wi-Fi</strong>
+            <p>
+                Enables communication between the ESP32
+                and the monitoring platform.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">MONITORING PLATFORM</span>
+            <strong>Web-Based Dashboard</strong>
+            <p>
+                Displays water level, flow rate,
+                monitoring history, and system alerts.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">SYSTEM STATUS</span>
+            <strong>Prototype Development</strong>
+            <p>
+                Hardware sensors have been tested.
+                Online sensor data integration is
+                currently being developed.
+            </p>
+        </div>
+
+        <div class="info-item">
+            <span class="info-label">LAST UPDATED</span>
+            <strong id="lastUpdated">--</strong>
+            <p>
+                Shows the latest dashboard update time.
+            </p>
+        </div>
+
     </div>
 
-    <div class="info-item">
-        <span class="info-label">MICROCONTROLLER</span>
-        <strong>ESP32 (Planned)</strong>
-        <p>Intended to process sensor readings and communicate with the dashboard.</p>
-    </div>
-
-    <div class="info-item">
-        <span class="info-label">WATER FLOW SENSOR</span>
-        <strong>YF-S201 (Planned)</strong>
-        <p>Intended to measure water flow through the irrigation line.</p>
-    </div>
-
-    <div class="info-item">
-        <span class="info-label">WATER LEVEL SENSOR</span>
-        <strong>Planned</strong>
-        <p>Intended to monitor the water level in the selected water container or supply source.</p>
-    </div>
-
-    <div class="info-item">
-        <span class="info-label">LAST UPDATED</span>
-        <strong id="lastUpdated">--</strong>
-        <p>Displays the last update time provided by the dashboard.</p>
-    </div>
-</div>
-            </section>
+</section>
 
             <footer class="footer">
                 AgriMonitor · IoT Irrigation Monitoring System
@@ -454,10 +497,6 @@ if (userAvatar) {
     }
   });
 </script>
-
-
-
-
 
 </body>
 </html>
