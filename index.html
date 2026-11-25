@@ -304,11 +304,11 @@
 
         <div class="info-item">
             <span class="info-label">WATER LEVEL SENSOR</span>
-            <strong>Analog Water Level Sensor</strong>
-            <p>
-                Detects changes in water level within
-                the monitored water container.
-            </p>
+            <strong>Ultrasonic Water Level Sensor</strong>
+<p>
+    Measures the distance to the water surface
+    to determine the current water level.
+</p>
         </div>
 
         <div class="info-item">
@@ -322,11 +322,11 @@
 
         <div class="info-item">
             <span class="info-label">CONNECTIVITY</span>
-            <strong>Wi-Fi</strong>
-            <p>
-                Enables communication between the ESP32
-                and the monitoring platform.
-            </p>
+            <strong>Wi-Fi and Firebase</strong>
+<p>
+    Transmits sensor readings from the ESP32
+    to Firebase Realtime Database for remote monitoring.
+</p>
         </div>
 
         <div class="info-item">
@@ -340,25 +340,26 @@
 
         <div class="info-item">
             <span class="info-label">SYSTEM STATUS</span>
-            <strong>Prototype Development</strong>
-            <p>
-                Hardware sensors have been tested.
-                Online sensor data integration is
-                currently being developed.
-            </p>
+            <strong>Cloud-Connected Prototype</strong>
+<p>
+    Hardware sensors transmit actual water level
+    and flow rate readings to Firebase Realtime Database.
+</p>
         </div>
 
         <div class="info-item">
             <span class="info-label">LAST UPDATED</span>
             <strong id="lastUpdated">--</strong>
             <p>
-                Shows the latest dashboard update time.
+                Shows the latest sensor data upload time.
             </p>
         </div>
 
     </div>
 
 </section>
+
+ 
 
             <footer class="footer">
                 AgriMonitor · IoT Irrigation Monitoring System
@@ -497,6 +498,10 @@ if (userAvatar) {
     }
   });
 </script>
+
+
+
+
 
 </body>
 </html>

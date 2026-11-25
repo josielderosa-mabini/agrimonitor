@@ -1,5 +1,11 @@
 
-import { database } from "./firebase.js";
+
+import { auth, database } from "./firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+
 import {
     ref,
     onValue
@@ -8,42 +14,49 @@ import {
 let currentWaterLevel = null;
 let currentFlowRate = null;
 
-const ESP32_API = "http://192.168.1.28/data";
+let latestData = null;
+let cloudConnected = false;
+let deviceConnected = false;
+let lastUpdated = null;
+let lastChartTimestamp = null;
+let lastChartConnected = false;
 
-async function fetchFlowRate() {
-  try {
-    const response = await fetch(ESP32_API, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(4000)
-    });
+const STALE_MS = 20000;
 
-    if (!response.ok) {
-      throw new Error("ESP32 unavailable");
-    }
+function refreshDashboard() {
+    const timestamp = latestData?.lastUpdated;
 
-    const data = await response.json();
+    deviceConnected =
+        cloudConnected &&
+        Number.isFinite(timestamp) &&
+        Date.now() - timestamp <= STALE_MS &&
+        timestamp <= Date.now() + STALE_MS;
 
-    // Actual Flow Rate
-    currentFlowRate =
-      Number.isFinite(data.flowRate) && data.flowRate >= 0
-        ? data.flowRate
-        : null;
+    lastUpdated =
+        Number.isFinite(timestamp) ? timestamp : null;
 
-    // Actual Water Level
+    const level = latestData?.waterLevel;
+    const flow = latestData?.flowRate;
+
     currentWaterLevel =
-      Number.isFinite(data.waterLevel) &&
-      data.waterLevel >= 0 &&
-      data.waterLevel <= 100
-        ? data.waterLevel
-        : null;
+        deviceConnected &&
+        Number.isFinite(level) &&
+        level >= 0 &&
+        level <= 100
+            ? level
+            : null;
 
-  } catch (error) {
-    currentFlowRate = null;
-    currentWaterLevel = null;
+    currentFlowRate =
+        deviceConnected &&
+        Number.isFinite(flow) &&
+        flow >= 0
+            ? flow
+            : null;
 
-    console.error("ESP32 connection error:", error);
-  }
+    updateDashboard();
+    checkWaterLevelPopup(currentWaterLevel);
 }
+
 
 const historyData = {
     labels: [],
@@ -116,6 +129,15 @@ function drawHistoryChart() {
     const chartWidth = width - left - right;
     const chartHeight = height - top - bottom;
 
+    const validFlows = historyData.flows.filter(
+    value => Number.isFinite(value) && value >= 0
+);
+
+const maxFlow = Math.max(
+    5,
+    Math.ceil(Math.max(0, ...validFlows) / 5) * 5
+);
+
     // Background and grid lines
     ctx.font = "11px Arial";
     ctx.textAlign = "right";
@@ -135,7 +157,11 @@ function drawHistoryChart() {
         ctx.fillText(value + "%", left - 8, y);
 
         ctx.textAlign = "left";
-        ctx.fillText((5 - i * 1.25).toFixed(i === 4 ? 0 : 2), width - right + 8, y);
+        ctx.fillText(
+    (maxFlow - (i * maxFlow / 4)).toFixed(i === 4 ? 0 : 2),
+    width - right + 8,
+    y
+);
         ctx.textAlign = "right";
     }
 
@@ -195,7 +221,7 @@ historyData.flows.forEach((value, index) => {
     }
 
     const x = xPosition(index);
-    const y = yPosition((value / 5) * 100);
+    const y = yPosition((value / maxFlow) * 100);
 
     if (!flowLineStarted) {
         ctx.moveTo(x, y);
@@ -274,43 +300,43 @@ historyData.flows.forEach((value, index) => {
 }
 
 
-    const alerts = [];
+    
+const alerts = [];
 
-if (waterLevel === null) {
-    if (currentFlowRate !== null) {
-        alerts.push({
-            key: "water-level-unavailable",
-            message: "Water level sensor reading unavailable.",
-            type: "warning"
-        });
-    }
-} else if (waterLevel < 25) {
-    alerts.push({
-        key: "low-water",
-        message: "Low water level detected. Please check the water supply.",
-        type: "warning"
-    });
-}
-
-
-if (currentFlowRate === null && currentWaterLevel === null) {
+if (!deviceConnected) {
     alerts.push({
         key: "esp32-disconnected",
         message: "ESP32 disconnected or unavailable. Please check the connection.",
         type: "warning"
     });
-} else if (currentFlowRate === null) {
-    alerts.push({
-        key: "flow-unavailable",
-        message: "Water flow sensor reading unavailable.",
-        type: "warning"
-    });
-} else if (currentFlowRate < 0.5) {
-    alerts.push({
-        key: "low-flow",
-        message: "Water flow is low or stopped.",
-        type: "warning"
-    });
+} else {
+    if (waterLevel === null) {
+        alerts.push({
+            key: "water-level-unavailable",
+            message: "Water level sensor reading unavailable.",
+            type: "warning"
+        });
+    } else if (waterLevel < 25) {
+        alerts.push({
+            key: "low-water",
+            message: "Low water level detected. Please check the water supply.",
+            type: "warning"
+        });
+    }
+
+    if (currentFlowRate === null) {
+        alerts.push({
+            key: "flow-unavailable",
+            message: "Water flow sensor reading unavailable.",
+            type: "warning"
+        });
+    } else if (currentFlowRate < 0.5) {
+        alerts.push({
+            key: "low-flow",
+            message: "Water flow is low or stopped.",
+            type: "warning"
+        });
+    }
 }
 
 
@@ -344,8 +370,15 @@ activeAlerts = alerts.map(function(alert) {
     return alert.key;
 });
     
-    // Save the latest sample readings
-    const now = new Date();
+
+// Save only new Firebase sensor readings
+if (
+    deviceConnected &&
+    lastUpdated !== null &&
+    lastUpdated !== lastChartTimestamp
+) {
+    const now = new Date(lastUpdated);
+
     const timeLabel = now.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -356,14 +389,16 @@ activeAlerts = alerts.map(function(alert) {
     historyData.levels.push(waterLevel);
     historyData.flows.push(currentFlowRate);
 
+    lastChartTimestamp = lastUpdated;
+
     // Keep only the latest 10 readings
     if (historyData.labels.length > 10) {
         historyData.labels.shift();
         historyData.levels.shift();
         historyData.flows.shift();
     }
-
-    
+}
+   
     // Update the monitoring chart
     drawHistoryChart();
 
@@ -407,14 +442,16 @@ activeAlerts = alerts.map(function(alert) {
             month: "long",
             day: "numeric"
         });
-
-    document.getElementById("lastUpdated").textContent =
-        new Date().toLocaleTimeString("en-PH");
-
     
+document.getElementById("lastUpdated").textContent =
+    lastUpdated !== null
+        ? new Date(lastUpdated).toLocaleString()
+        : "--";
+
+
 const deviceStatus = document.getElementById("deviceStatus");
 
-if (currentFlowRate !== null || currentWaterLevel !== null) {
+if (deviceConnected) {
     deviceStatus.textContent = "Connected";
     deviceStatus.style.color = "#16a34a";
 } else {
@@ -422,22 +459,59 @@ if (currentFlowRate !== null || currentWaterLevel !== null) {
     deviceStatus.style.color = "#dc2626";
 }
 
-}
 
-// Fetch actual ESP32 readings every 5 seconds
-async function refreshDashboard() {
-    await fetchFlowRate();
-    updateDashboard();
-
-    // Check actual ESP32 water level for popup alerts
-    checkWaterLevelPopup(currentWaterLevel);
-
-    setTimeout(refreshDashboard, 5000);
 }
 
 
-refreshDashboard();
+// Firebase Realtime Database Monitoring
+let unsubscribeSensor = null;
+let unsubscribeConnection = null;
+let refreshTimer = null;
 
+onAuthStateChanged(auth, (user) => {
+    if (unsubscribeSensor) unsubscribeSensor();
+    if (unsubscribeConnection) unsubscribeConnection();
+    if (refreshTimer) clearInterval(refreshTimer);
+
+    latestData = null;
+    cloudConnected = false;
+
+    if (!user) {
+        refreshDashboard();
+        return;
+    }
+
+    // Monitor Firebase connection
+    unsubscribeConnection = onValue(
+        ref(database, ".info/connected"),
+        (snapshot) => {
+            cloudConnected = snapshot.val() === true;
+            refreshDashboard();
+        }
+    );
+
+    // Receive actual ESP32 sensor readings
+    unsubscribeSensor = onValue(
+        ref(database, "sensorData"),
+        (snapshot) => {
+            latestData = snapshot.val();
+
+            console.log("Firebase Sensor Data:", latestData);
+
+            refreshDashboard();
+        },
+        (error) => {
+            latestData = null;
+
+            console.error("Firebase read error:", error);
+
+            refreshDashboard();
+        }
+    );
+
+    // Check whether the sensor readings are still updated
+    refreshTimer = setInterval(refreshDashboard, 5000);
+});
 
 const menuToggle = document.getElementById("menuToggle");
 const navigation = document.querySelector(".navigation");
